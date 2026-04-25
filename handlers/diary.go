@@ -121,7 +121,7 @@ func CreateDiary(c *gin.Context) {
 	creatureID := pickCreature(currentDepth)
 
 	now := time.Now()
-	hatchesAt := now.Add(24 * time.Hour)
+	hatchesAt := now.Add(10 * time.Second)
 
 	result, err := db.DB.Exec(`
 		INSERT INTO diaries (user_id, title, content, diary_date, category, depth, creature_id, hatches_at, created_at, updated_at)
