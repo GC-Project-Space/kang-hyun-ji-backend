@@ -17,7 +17,21 @@ var validCategories = map[string]bool{
 	"감사": true, "일상": true, "감정": true, "목표": true, "기타": true,
 }
 
-// ListDiaries returns all diaries for the test user
+// CreateDiaryRequest is the request body for creating a diary.
+type CreateDiaryRequest struct {
+	Title     string `json:"title" example:"오늘의 일기"`
+	Content   string `json:"content" example:"오늘은 바다가 맑았다."`
+	DiaryDate string `json:"diary_date" example:"2026-04-25"`
+	Category  string `json:"category" example:"일상" enums:"감사,일상,감정,목표,기타"`
+}
+
+// ListDiaries godoc
+// @Summary     일기 목록 조회
+// @Description 테스트 유저의 전체 일기 목록을 반환합니다.
+// @Tags        diaries
+// @Produce     json
+// @Success     200  {array}   models.Diary
+// @Router      /diaries [get]
 func ListDiaries(c *gin.Context) {
 	rows, err := db.DB.Query(`
 		SELECT d.id, d.user_id, d.title, d.content, d.diary_date, d.category,
@@ -47,7 +61,16 @@ func ListDiaries(c *gin.Context) {
 	c.JSON(http.StatusOK, diaries)
 }
 
-// GetDiary returns a single diary by id
+// GetDiary godoc
+// @Summary     일기 단건 조회
+// @Description ID로 일기를 조회합니다.
+// @Tags        diaries
+// @Produce     json
+// @Param       id   path      int  true  "Diary ID"
+// @Success     200  {object}  models.Diary
+// @Failure     400  {object}  map[string]string
+// @Failure     404  {object}  map[string]string
+// @Router      /diaries/{id} [get]
 func GetDiary(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -63,7 +86,16 @@ func GetDiary(c *gin.Context) {
 	c.JSON(http.StatusOK, diary)
 }
 
-// CreateDiary creates a new diary (egg), assigns a creature based on current depth
+// CreateDiary godoc
+// @Summary     일기 작성 (알 생성)
+// @Description 일기를 작성하면 현재 수심 기준으로 생명체 알이 배정됩니다.
+// @Tags        diaries
+// @Accept      json
+// @Produce     json
+// @Param       body  body      handlers.CreateDiaryRequest  true  "일기 내용"
+// @Success     201   {object}  models.Diary
+// @Failure     400   {object}  map[string]string
+// @Router      /diaries [post]
 func CreateDiary(c *gin.Context) {
 	var req struct {
 		Title     string `json:"title" binding:"required"`
@@ -109,7 +141,16 @@ func CreateDiary(c *gin.Context) {
 	c.JSON(http.StatusCreated, diary)
 }
 
-// HatchDiary checks if 24h has passed and hatches the egg, adding to collection
+// HatchDiary godoc
+// @Summary     알 부화
+// @Description 작성 후 24시간이 지난 일기의 알을 부화시킵니다.
+// @Tags        diaries
+// @Produce     json
+// @Param       id   path      int  true  "Diary ID"
+// @Success     200  {object}  map[string]interface{}
+// @Failure     400  {object}  map[string]string
+// @Failure     404  {object}  map[string]string
+// @Router      /diaries/{id}/hatch [post]
 func HatchDiary(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

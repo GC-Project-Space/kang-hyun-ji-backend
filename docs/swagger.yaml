@@ -1,0 +1,347 @@
+basePath: /api
+definitions:
+  handlers.AchievementWithStatus:
+    properties:
+      achieved:
+        type: boolean
+      achieved_at:
+        type: string
+      condition_type:
+        type: string
+      condition_value:
+        type: integer
+      description:
+        type: string
+      icon_url:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+    type: object
+  handlers.CollectionEntry:
+    properties:
+      collected:
+        type: boolean
+      count:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      last_collected_at:
+        type: string
+      max_depth:
+        type: integer
+      min_depth:
+        type: integer
+      name:
+        type: string
+      rarity:
+        type: string
+      spawn_weight:
+        type: integer
+    type: object
+  handlers.CreateDiaryRequest:
+    properties:
+      category:
+        enum:
+        - 감사
+        - 일상
+        - 감정
+        - 목표
+        - 기타
+        example: 일상
+        type: string
+      content:
+        example: 오늘은 바다가 맑았다.
+        type: string
+      diary_date:
+        example: "2026-04-25"
+        type: string
+      title:
+        example: 오늘의 일기
+        type: string
+    type: object
+  models.Diary:
+    properties:
+      category:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      creature:
+        $ref: '#/definitions/models.SeaCreature'
+      creature_id:
+        type: integer
+      depth:
+        type: integer
+      diary_date:
+        type: string
+      hatched_at:
+        type: string
+      hatches_at:
+        type: string
+      id:
+        type: integer
+      is_hatched:
+        type: boolean
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.SeaCreature:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      max_depth:
+        type: integer
+      min_depth:
+        type: integer
+      name:
+        type: string
+      rarity:
+        type: string
+      spawn_weight:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      current_depth:
+        type: integer
+      current_streak:
+        type: integer
+      id:
+        type: integer
+      last_diary_date:
+        type: string
+      longest_streak:
+        type: integer
+      total_diary_count:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: 강현지의 바다 일기 백엔드 API입니다.
+  title: Ocean Diary API
+  version: "1.0"
+paths:
+  /achievements:
+    get:
+      description: 전체 업적과 유저의 달성 여부를 반환합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.AchievementWithStatus'
+            type: array
+      summary: 업적 목록
+      tags:
+      - achievements
+  /collection:
+    get:
+      description: 유저가 수집한 생명체 목록을 반환합니다. 미수집 생명체도 포함됩니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.CollectionEntry'
+            type: array
+      summary: 내 수집 도감
+      tags:
+      - collection
+  /creatures:
+    get:
+      description: 바다에 존재하는 모든 생명체 목록을 반환합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SeaCreature'
+            type: array
+      summary: 도감 - 전체 생명체 목록
+      tags:
+      - collection
+  /diaries:
+    get:
+      description: 테스트 유저의 전체 일기 목록을 반환합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Diary'
+            type: array
+      summary: 일기 목록 조회
+      tags:
+      - diaries
+    post:
+      consumes:
+      - application/json
+      description: 일기를 작성하면 현재 수심 기준으로 생명체 알이 배정됩니다.
+      parameters:
+      - description: 일기 내용
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateDiaryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Diary'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 일기 작성 (알 생성)
+      tags:
+      - diaries
+  /diaries/{id}:
+    get:
+      description: ID로 일기를 조회합니다.
+      parameters:
+      - description: Diary ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Diary'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 일기 단건 조회
+      tags:
+      - diaries
+  /diaries/{id}/hatch:
+    post:
+      description: 작성 후 24시간이 지난 일기의 알을 부화시킵니다.
+      parameters:
+      - description: Diary ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 알 부화
+      tags:
+      - diaries
+  /users/me:
+    get:
+      description: 테스트 유저(id=1)의 정보를 반환합니다.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 내 정보 조회
+      tags:
+      - users
+  /users/me/depth:
+    patch:
+      consumes:
+      - application/json
+      description: 유저의 현재 수심을 변경합니다. (0~1000m)
+      parameters:
+      - description: depth (0~1000)
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties:
+            type: integer
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 수심 변경
+      tags:
+      - users
+swagger: "2.0"

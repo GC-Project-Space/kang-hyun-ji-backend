@@ -9,7 +9,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListCreatures returns all creatures in the guidebook (도감)
+// CollectionEntry is a sea creature with collection status.
+type CollectionEntry struct {
+	models.SeaCreature
+	Count           int     `json:"count"`
+	LastCollectedAt *string `json:"last_collected_at"`
+	Collected       bool    `json:"collected"`
+}
+
+// ListCreatures godoc
+// @Summary     도감 - 전체 생명체 목록
+// @Description 바다에 존재하는 모든 생명체 목록을 반환합니다.
+// @Tags        collection
+// @Produce     json
+// @Success     200  {array}  models.SeaCreature
+// @Router      /creatures [get]
 func ListCreatures(c *gin.Context) {
 	rows, err := db.DB.Query(`
 		SELECT id, name, description, min_depth, max_depth, rarity, spawn_weight, image_url
@@ -32,7 +46,13 @@ func ListCreatures(c *gin.Context) {
 	c.JSON(http.StatusOK, creatures)
 }
 
-// GetCollection returns the user's collected creatures grouped by creature with counts
+// GetCollection godoc
+// @Summary     내 수집 도감
+// @Description 유저가 수집한 생명체 목록을 반환합니다. 미수집 생명체도 포함됩니다.
+// @Tags        collection
+// @Produce     json
+// @Success     200  {array}  handlers.CollectionEntry
+// @Router      /collection [get]
 func GetCollection(c *gin.Context) {
 	rows, err := db.DB.Query(`
 		SELECT sc.id, sc.name, sc.description, sc.min_depth, sc.max_depth,
@@ -49,13 +69,6 @@ func GetCollection(c *gin.Context) {
 		return
 	}
 	defer rows.Close()
-
-	type CollectionEntry struct {
-		models.SeaCreature
-		Count           int     `json:"count"`
-		LastCollectedAt *string `json:"last_collected_at"`
-		Collected       bool    `json:"collected"`
-	}
 
 	result := []CollectionEntry{}
 	for rows.Next() {

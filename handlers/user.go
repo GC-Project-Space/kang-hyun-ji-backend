@@ -10,7 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetMe returns the hardcoded test user (id=1)
+// GetMe godoc
+// @Summary     내 정보 조회
+// @Description 테스트 유저(id=1)의 정보를 반환합니다.
+// @Tags        users
+// @Produce     json
+// @Success     200  {object}  models.User
+// @Failure     404  {object}  map[string]string
+// @Router      /users/me [get]
 func GetMe(c *gin.Context) {
 	user, err := fetchUser(1)
 	if err != nil {
@@ -20,7 +27,16 @@ func GetMe(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// UpdateDepth updates the user's current depth (0~1000m)
+// UpdateDepth godoc
+// @Summary     수심 변경
+// @Description 유저의 현재 수심을 변경합니다. (0~1000m)
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       body  body      map[string]int  true  "depth (0~1000)"
+// @Success     200   {object}  models.User
+// @Failure     400   {object}  map[string]string
+// @Router      /users/me/depth [patch]
 func UpdateDepth(c *gin.Context) {
 	var req struct {
 		Depth int `json:"depth" binding:"required,min=0,max=1000"`

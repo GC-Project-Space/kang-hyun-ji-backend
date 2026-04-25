@@ -9,7 +9,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListAchievements returns all achievements with the user's completion status
+// AchievementWithStatus is an achievement with the user's completion status.
+type AchievementWithStatus struct {
+	models.Achievement
+	Achieved   bool    `json:"achieved"`
+	AchievedAt *string `json:"achieved_at"`
+}
+
+// ListAchievements godoc
+// @Summary     업적 목록
+// @Description 전체 업적과 유저의 달성 여부를 반환합니다.
+// @Tags        achievements
+// @Produce     json
+// @Success     200  {array}  handlers.AchievementWithStatus
+// @Router      /achievements [get]
 func ListAchievements(c *gin.Context) {
 	rows, err := db.DB.Query(`
 		SELECT a.id, a.key, a.name, a.description, a.condition_type, a.condition_value, COALESCE(a.icon_url, ''),
@@ -23,12 +36,6 @@ func ListAchievements(c *gin.Context) {
 		return
 	}
 	defer rows.Close()
-
-	type AchievementWithStatus struct {
-		models.Achievement
-		Achieved   bool    `json:"achieved"`
-		AchievedAt *string `json:"achieved_at"`
-	}
 
 	result := []AchievementWithStatus{}
 	for rows.Next() {

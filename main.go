@@ -1,12 +1,21 @@
+// @title           Ocean Diary API
+// @version         1.0
+// @description     강현지의 바다 일기 백엔드 API입니다.
+// @host            localhost:8080
+// @BasePath        /api
+
 package main
 
 import (
 	"log"
 
+	_ "kang-hyun-ji-backend/docs"
 	"kang-hyun-ji-backend/db"
 	"kang-hyun-ji-backend/handlers"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -26,6 +35,8 @@ func main() {
 		}
 		c.Next()
 	})
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api")
 	{
