@@ -52,9 +52,12 @@ func seedCreatures() {
 		{"초롱아귀 (Anglerfish)", "머리 위의 빛나는 발광기로 먹이를 유혹하는 심해의 사냥꾼입니다.", 650, 1000, "RARE", 8, "/assets/images/creatures/anglerfish.png"},
 		{"흡혈오징어 (Vampire Squid)", "망토 같은 지느러미를 가진 어두운 심해의 신비로운 생물입니다.", 750, 1000, "RARE", 7, "/assets/images/creatures/vampire-squid.png"},
 		{"대왕오징어 (Giant Squid)", "심해 깊은 곳에 숨어 사는 전설적인 크기의 오징어입니다.", 600, 950, "LEGENDARY", 3, "/assets/images/creatures/giant-squid.png"},
-		{"심해 등각류 (Isopod)", "바닥을 기어 다니며 심해의 영양분을 섭취하는 갑각류입니다.", 800, 1000, "UNCOMMON", 15, "/assets/images/creatures/isopod.png"},
+		{"심해 등각류 (Isopod)", "바닥을 기어 다니며 심해의 영양분을 섭취하는 갑각류입니다.", 800, 1000, "UNCOMMON", 15, "/assets/images/creatures/deep-sea-isopod.png"},
 		{"덤보문어 (Dumbo Octopus)", "귀 같은 지느러미를 펄럭이며 헤엄치는 매우 귀여운 심해어입니다.", 700, 1000, "LEGENDARY", 4, "/assets/images/creatures/dumbo-octopus.png"},
 		{"클리오네 (Sea Angel)", "천사 같은 날개짓으로 심해를 부유하는 투명한 생물입니다.", 400, 900, "RARE", 6, "/assets/images/creatures/sea-angel.png"},
+		{"엔젤피쉬 (Angelfish)", "화려한 줄무늬와 삼각형 지느러미가 아름다운 열대 물고기입니다.", 0, 200, "UNCOMMON", 22, "/assets/images/creatures/angelfish.png"},
+		{"랜턴피쉬 (Lanternfish)", "몸에서 빛을 내며 심해를 유영하는 작은 발광 물고기입니다.", 500, 900, "RARE", 9, "/assets/images/creatures/lanternfish.png"},
+		{"잠수함 (Submarine)", "바다 깊은 곳에서 발견된 신비로운 철제 물체입니다.", 300, 1000, "LEGENDARY", 2, "/assets/images/creatures/submarine.png"},
 	}
 
 	stmt, err := DB.Prepare(`
